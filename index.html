@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trovally — Discover Where the Money Moves</title>
+  <meta name="description" content="Real-time intelligence on government funding, tenders, legislation and institutional money flows across 21 countries. Built for deal makers who move first." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:      #0A0A0F;
+      --gold:     #C9A84C;
+      --gold-lt:  #E2BC6A;
+      --gold-dim: #8B6B2A;
+      --paper:    #F0EBE1;
+      --cream:    #E8E0D0;
+      --rule:     rgba(201,168,76,0.2);
+      --fg2:      #3A3530;
+      --fg3:      #7A7068;
+      --card:     #0F0F18;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.3rem 4rem;
+      border-bottom: 1px solid var(--rule);
+      background: rgba(10,10,15,0.94);
+      backdrop-filter: blur(16px);
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gold-lt);
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--paper); font-weight: 400; font-style: italic; }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 2.5rem;
+    }
+
+    .nav-link {
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fg3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--gold-lt); }
+
+    .nav-btn {
+      font-size: 0.76rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--gold-lt);
+      padding: 0.6rem 1.5rem;
+      text-decoration: none;
+      transition: background 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-btn:hover { background: var(--gold); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 9rem 2rem 6rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.05) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, black 20%, transparent 100%);
+    }
+
+    .hero-orb {
+      position: absolute;
+      width: 800px; height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.09) 0%, transparent 65%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      50% { transform: translate(-50%, -50%) scale(1.08); opacity: 0.7; }
+    }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 10vw, 9rem);
+      font-weight: 700;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--paper);
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.35s forwards;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-lt);
+    }
+
+    .hero-divider {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 2rem auto;
+      opacity: 0;
+      animation: fadeIn 1s ease 0.6s forwards;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--fg3);
+      max-width: 580px;
+      line-height: 1.75;
+      margin: 0 auto 3rem;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.7s forwards;
+    }
+
+    .hero-sub strong { color: var(--paper); font-weight: 500; }
+
+    /* ── WAITLIST ── */
+    .wl-wrap {
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.9s forwards;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .wl-form {
+      display: flex;
+      border: 1px solid var(--rule);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .wl-input {
+      flex: 1;
+      padding: 1.05rem 1.4rem;
+      background: rgba(240,235,225,0.04);
+      border: none;
+      outline: none;
+      color: var(--paper);
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 0.92rem;
+    }
+    .wl-input::placeholder { color: var(--fg3); }
+
+    .wl-btn {
+      padding: 1.05rem 2rem;
+      background: var(--gold-lt);
+      border: none;
+      color: var(--ink);
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .wl-btn:hover { background: var(--gold); }
+
+    .wl-note {
+      font-size: 0.73rem;
+      color: var(--fg3);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+
+    .wl-success {
+      display: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--gold-lt);
+      padding: 1.2rem 2rem;
+      border: 1px solid var(--rule);
+      text-align: center;
+      background: rgba(201,168,76,0.04);
+    }
+
+    /* ── MARQUEE ── */
+    .marquee {
+      overflow: hidden;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 0.9rem 0;
+      background: rgba(201,168,76,0.02);
+    }
+
+    .marquee-track {
+      display: flex; gap: 2rem;
+      animation: scroll 35s linear infinite;
+      white-space: nowrap;
+    }
+
+    .m-item {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      flex-shrink: 0;
+    }
+
+    .m-dot { color: var(--gold-lt); margin-left: 2rem; }
+
+    /* ── STATS ── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .stat {
+      flex: 1; max-width: 200px;
+      padding: 2.8rem 1rem;
+      text-align: center;
+      border-right: 1px solid var(--rule);
+    }
+    .stat:last-child { border-right: none; }
+
+    .stat-n {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--gold-lt);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-l {
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fg3);
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 7rem 3rem;
+    }
+
+    .s-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 1rem;
+    }
+
+    .s-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 4vw, 3.6rem);
+      font-weight: 600;
+      line-height: 1.08;
+      color: var(--paper);
+      margin-bottom: 1.4rem;
+    }
+    .s-title em { font-style: italic; color: var(--gold-lt); }
+
+    .s-body {
+      font-size: 1.05rem;
+      color: var(--fg3);
+      max-width: 540px;
+      line-height: 1.78;
+    }
+
+    /* ── INTELLIGENCE GRID ── */
+    .intel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin-top: 4rem;
+    }
+
+    .intel-card {
+      background: var(--card);
+      padding: 2.8rem 2.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+      cursor: default;
+    }
+    .intel-card:hover { background: rgba(201,168,76,0.06); }
+
+    .intel-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-lt), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .intel-card:hover::after { opacity: 1; }
+
+    .i-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--gold-dim);
+      letter-spacing: 0.2em;
+      margin-bottom: 1.4rem;
+    }
+
+    .i-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem;
+      font-weight: 600;
+      color: var(--paper);
+      margin-bottom: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .i-desc {
+      font-size: 0.88rem;
+      color: var(--fg3);
+      line-height: 1.72;
+    }
+
+    /* ── COUNTRIES ── */
+    .countries {
+      padding: 5rem 3rem 7rem;
+      border-top: 1px solid var(--rule);
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .continent {
+      margin-bottom: 2.8rem;
+    }
+
+    .continent-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .pills {
+      display: flex; flex-wrap: wrap; gap: 0.6rem;
+    }
+
+    .pill {
+      font-size: 0.82rem;
+      padding: 0.45rem 1.1rem;
+      border: 1px solid rgba(201,168,76,0.18);
+      color: var(--paper);
+      background: rgba(201,168,76,0.03);
+      transition: all 0.2s;
+      cursor: default;
+    }
+    .pill:hover {
+      border-color: var(--gold-lt);
+      background: rgba(201,168,76,0.1);
+      color: var(--gold-lt);
+    }
+
+    .pill.launch {
+      border-color: rgba(201,168,76,0.5);
+      background: rgba(201,168,76,0.08);
+    }
+
+    /* ── PRICING ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin-top: 4rem;
+    }
+
+    .p-card {
+      background: var(--card);
+      padding: 2.8rem 2rem;
+      position: relative;
+    }
+
+    .p-card.hot {
+      background: rgba(201,168,76,0.06);
+    }
+
+    .p-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--gold-lt);
+      padding: 0.28rem 0.7rem;
+      display: inline-block;
+      margin-bottom: 1.4rem;
+    }
+
+    .p-tier {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--paper);
+      margin-bottom: 0.4rem;
+    }
+
+    .p-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--gold-lt);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .p-price span {
+      font-size: 1rem;
+      color: var(--fg3);
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 400;
+    }
+
+    .p-desc {
+      font-size: 0.83rem;
+      color: var(--fg3);
+      line-height: 1.65;
+      margin-bottom: 1.8rem;
+      padding-bottom: 1.8rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .p-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 0.65rem;
+    }
+
+    .p-features li {
+      font-size: 0.83rem;
+      color: var(--fg3);
+      padding-left: 1.3rem;
+      position: relative;
+    }
+
+    .p-features li::before {
+      content: '—';
+      position: absolute; left: 0;
+      color: var(--gold-dim);
+    }
+
+    /* ── WHO IS IT FOR ── */
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin-top: 4rem;
+    }
+
+    .who-card {
+      background: var(--card);
+      padding: 2.5rem 2rem;
+    }
+
+    .who-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .who-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--paper);
+      margin-bottom: 0.7rem;
+    }
+
+    .who-desc {
+      font-size: 0.85rem;
+      color: var(--fg3);
+      line-height: 1.7;
+    }
+
+    /* ── FINAL CTA ── */
+    .cta {
+      text-align: center;
+      padding: 9rem 2rem;
+      border-top: 1px solid var(--rule);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 5.5vw, 5rem);
+      font-weight: 700;
+      color: var(--paper);
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+    }
+    .cta-title em { font-style: italic; color: var(--gold-lt); }
+
+    .cta-sub {
+      font-size: 1.05rem;
+      color: var(--fg3);
+      margin: 0 auto 3rem;
+      max-width: 460px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 2.2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .f-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold-lt);
+    }
+
+    .f-links {
+      display: flex; gap: 2rem;
+    }
+
+    .f-link {
+      font-size: 0.73rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .f-link:hover { color: var(--gold-lt); }
+
+    .f-copy {
+      font-size: 0.73rem;
+      color: var(--fg3);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── SCROLL REVEALS ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links .nav-link { display: none; }
+      .intel-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+      .who-grid { grid-template-columns: 1fr; }
+      .section { padding: 5rem 1.5rem; }
+      .countries { padding: 4rem 1.5rem; }
+      footer { flex-direction: column; gap: 1.2rem; text-align: center; }
+      .f-links { justify-content: center; }
+      .stats { flex-wrap: wrap; }
+      .stat { min-width: 150px; }
+    }
+
+    @media (max-width: 600px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+      .wl-form { flex-direction: column; }
+      .wl-btn { padding: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Trov<span>ally</span></a>
+  <div class="nav-links">
+    <a href="#intelligence" class="nav-link">Intelligence</a>
+    <a href="#countries" class="nav-link">Coverage</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#waitlist" class="nav-btn">Join Waitlist</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb"></div>
+
+  <p class="hero-tag">Global Intelligence Platform &nbsp;·&nbsp; 21 Countries &nbsp;·&nbsp; Launching 2026</p>
+
+  <h1 class="hero-title">
+    Discover where<br/>the <em>money moves.</em>
+  </h1>
+
+  <div class="hero-divider"></div>
+
+  <p class="hero-sub">
+    Trovally tracks <strong>government tenders, institutional funding, legislation changes</strong> and money flows across 21 countries — updated daily by AI. Built for deal makers who move <strong>before the market does.</strong>
+  </p>
+
+  <div class="wl-wrap" id="waitlist">
+    <form class="wl-form" id="form1">
+      <input class="wl-input" type="email" id="email1" placeholder="Enter your email address" required />
+      <button class="wl-btn" type="submit">Join Waitlist</button>
+    </form>
+    <div class="wl-success" id="success1">
+      You are on the map. We will be in touch.
+    </div>
+    <p class="wl-note">Early access · Founding pricing · No spam</p>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="m-item">Government Tenders<span class="m-dot">◆</span></span>
+    <span class="m-item">Development Finance<span class="m-dot">◆</span></span>
+    <span class="m-item">Legislative Radar<span class="m-dot">◆</span></span>
+    <span class="m-item">Grants &amp; Funding<span class="m-dot">◆</span></span>
+    <span class="m-item">Procurement Intelligence<span class="m-dot">◆</span></span>
+    <span class="m-item">Deal Flow<span class="m-dot">◆</span></span>
+    <span class="m-item">21 Countries<span class="m-dot">◆</span></span>
+    <span class="m-item">Daily AI Updates<span class="m-dot">◆</span></span>
+    <span class="m-item">Nigeria First<span class="m-dot">◆</span></span>
+    <span class="m-item">Private Intelligence<span class="m-dot">◆</span></span>
+    <span class="m-item">Government Tenders<span class="m-dot">◆</span></span>
+    <span class="m-item">Development Finance<span class="m-dot">◆</span></span>
+    <span class="m-item">Legislative Radar<span class="m-dot">◆</span></span>
+    <span class="m-item">Grants &amp; Funding<span class="m-dot">◆</span></span>
+    <span class="m-item">Procurement Intelligence<span class="m-dot">◆</span></span>
+    <span class="m-item">Deal Flow<span class="m-dot">◆</span></span>
+    <span class="m-item">21 Countries<span class="m-dot">◆</span></span>
+    <span class="m-item">Daily AI Updates<span class="m-dot">◆</span></span>
+    <span class="m-item">Nigeria First<span class="m-dot">◆</span></span>
+    <span class="m-item">Private Intelligence<span class="m-dot">◆</span></span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat reveal">
+    <div class="stat-n">21</div>
+    <div class="stat-l">Countries</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-n">$13T</div>
+    <div class="stat-l">Global Procurement</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-n">Daily</div>
+    <div class="stat-l">AI Updates</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-n">6</div>
+    <div class="stat-l">Continents</div>
+  </div>
+  <div class="stat reveal">
+    <div class="stat-n">&lt;24h</div>
+    <div class="stat-l">Legislative Alerts</div>
+  </div>
+</div>
+
+<!-- WHO IS IT FOR -->
+<div style="border-bottom: 1px solid var(--rule);">
+  <div class="section" id="who">
+    <p class="s-label">Who Trovally Is Built For</p>
+    <h2 class="s-title reveal">Three users.<br/><em>One unfair advantage.</em></h2>
+
+    <div class="who-grid">
+      <div class="who-card reveal">
+        <div class="who-icon">⚖️</div>
+        <div class="who-title">Lawyers & Legal Firms</div>
+        <div class="who-desc">Legislative changes, procurement regulations, and government contract opportunities delivered before your clients ask. Bill the intelligence. Keep the edge.</div>
+      </div>
+      <div class="who-card reveal">
+        <div class="who-icon">🌍</div>
+        <div class="who-title">Diaspora Business Owners</div>
+        <div class="who-desc">Distance from your home market should not mean information poverty. Trovally monitors what you cannot — government portals, gazette publications, and funding cycles — so you never miss the move.</div>
+      </div>
+      <div class="who-card reveal">
+        <div class="who-icon">🏢</div>
+        <div class="who-title">International Companies</div>
+        <div class="who-desc">Entering a new market blind is expensive. Trovally gives you the procurement pipeline, regulatory landscape and institutional money flow of 21 countries before you commit a dollar.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INTELLIGENCE -->
+<div style="border-bottom: 1px solid var(--rule);">
+  <div class="section" id="intelligence">
+    <p class="s-label">Intelligence Architecture</p>
+    <h2 class="s-title reveal">Not a bulletin board.<br/><em>A thinking platform.</em></h2>
+    <p class="s-body reveal">Every existing tender platform shows you what is already public. Trovally shows you what matters — before the market prices it in. Six layers of intelligence running simultaneously every day.</p>
+
+    <div class="intel-grid">
+      <div class="intel-card reveal">
+        <div class="i-num">01 —</div>
+        <div class="i-title">Live Opportunity Feed</div>
+        <div class="i-desc">Government tenders, grants and funding programs crawled daily from official portals. Auto-classified, plain language summaries, expired entries automatically archived.</div>
+      </div>
+      <div class="intel-card reveal">
+        <div class="i-num">02 —</div>
+        <div class="i-title">Legislative Radar</div>
+        <div class="i-desc">New financial laws and regulations monitored within hours of publication. Plain language interpretation of what each change means for deal makers before their advisors call them back.</div>
+      </div>
+      <div class="intel-card reveal">
+        <div class="i-num">03 —</div>
+        <div class="i-title">Development Finance</div>
+        <div class="i-desc">World Bank, AfDB, IDB, ADB and regional development banks in one place. The highest value opportunities most deal makers never see because nobody assembled them before.</div>
+      </div>
+      <div class="intel-card reveal">
+        <div class="i-num">04 —</div>
+        <div class="i-title">Pattern Detection</div>
+        <div class="i-desc">When a government enters a spending cycle the AI flags it before the market recognises it. Three infrastructure tenders in 30 days signals a cycle. You move on intelligence not news.</div>
+      </div>
+      <div class="intel-card reveal">
+        <div class="i-num">05 —</div>
+        <div class="i-title">Personalised Alerts</div>
+        <div class="i-desc">Your sector. Your countries. Your opportunity size. The platform learns your profile and surfaces what is relevant before you search. Urgency alerts at 7 days and 48 hours before deadline.</div>
+      </div>
+      <div class="intel-card reveal">
+        <div class="i-num">06 —</div>
+        <div class="i-title">Archive Intelligence</div>
+        <div class="i-desc">Expired opportunities become intelligence not dead links. Search three years of what a government funded. Understand patterns. Build stronger proposals with full historical context.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COUNTRIES -->
+<div style="border-bottom: 1px solid var(--rule);">
+  <div class="countries" id="countries">
+    <p class="s-label">Global Coverage</p>
+    <h2 class="s-title reveal" style="margin-bottom:3rem;">21 countries.<br/><em>Six continents.</em></h2>
+
+    <div class="continent reveal">
+      <div class="continent-name">Africa — Launch Market</div>
+      <div class="pills">
+        <div class="pill launch">🇳🇬 Nigeria ★</div>
+        <div class="pill">🇿🇦 South Africa</div>
+        <div class="pill">🇰🇪 Kenya</div>
+      </div>
+    </div>
+
+    <div class="continent reveal">
+      <div class="continent-name">Asia</div>
+      <div class="pills">
+        <div class="pill">🇦🇪 UAE</div>
+        <div class="pill">🇮🇳 India</div>
+        <div class="pill">🇸🇬 Singapore</div>
+      </div>
+    </div>
+
+    <div class="continent reveal">
+      <div class="continent-name">Europe</div>
+      <div class="pills">
+        <div class="pill">🇬🇧 United Kingdom</div>
+        <div class="pill">🇩🇪 Germany</div>
+        <div class="pill">🇳🇱 Netherlands</div>
+      </div>
+    </div>
+
+    <div class="continent reveal">
+      <div class="continent-name">North America</div>
+      <div class="pills">
+        <div class="pill">🇺🇸 United States</div>
+        <div class="pill">🇨🇦 Canada</div>
+        <div class="pill">🇲🇽 Mexico</div>
+      </div>
+    </div>
+
+    <div class="continent reveal">
+      <div class="continent-name">South America</div>
+      <div class="pills">
+        <div class="pill">🇧🇷 Brazil</div>
+        <div class="pill">🇨🇴 Colombia</div>
+        <div class="pill">🇨🇱 Chile</div>
+      </div>
+    </div>
+
+    <div class="continent reveal">
+      <div class="continent-name">Oceania</div>
+      <div class="pills">
+        <div class="pill">🇦🇺 Australia</div>
+        <div class="pill">🇳🇿 New Zealand</div>
+        <div class="pill">🇮🇩 Indonesia</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div style="border-bottom: 1px solid var(--rule);">
+  <div class="section" id="pricing">
+    <p class="s-label">Subscription Tiers</p>
+    <h2 class="s-title reveal">Intelligence priced for<br/><em>the size of your ambition.</em></h2>
+
+    <div class="pricing-grid">
+      <div class="p-card reveal">
+        <div class="p-tier">The Scout</div>
+        <div class="p-price">$99<span>/mo</span></div>
+        <p class="p-desc">One continent. Five countries. For professionals entering cross-border deal making.</p>
+        <ul class="p-features">
+          <li>1 continent, up to 5 countries</li>
+          <li>Daily opportunity feed</li>
+          <li>Morning email digest</li>
+          <li>Deadline urgency alerts</li>
+          <li>Searchable archive</li>
+        </ul>
+      </div>
+
+      <div class="p-card hot reveal">
+        <div class="p-badge">Most Popular</div>
+        <div class="p-tier">The Operator</div>
+        <div class="p-price">$299<span>/mo</span></div>
+        <p class="p-desc">Three continents. Full legislative radar. For law firms, consultants and serious deal makers.</p>
+        <ul class="p-features">
+          <li>3 continents, all countries</li>
+          <li>Full legislative radar</li>
+          <li>Pattern & cycle alerts</li>
+          <li>Weekly country briefs</li>
+          <li>Development finance layer</li>
+          <li>Full archive intelligence</li>
+        </ul>
+      </div>
+
+      <div class="p-card reveal">
+        <div class="p-tier">The Deal Maker</div>
+        <div class="p-price">$799<span>/mo</span></div>
+        <p class="p-desc">All 21 countries. Every feature. API access. For investment offices and large operators.</p>
+        <ul class="p-features">
+          <li>All 21 countries</li>
+          <li>AI opportunity matching</li>
+          <li>Direct API access</li>
+          <li>Priority urgency alerts</li>
+          <li>Monthly analyst briefing</li>
+          <li>White-glove onboarding</li>
+        </ul>
+      </div>
+
+      <div class="p-card reveal">
+        <div class="p-tier">Enterprise</div>
+        <div class="p-price">Custom</div>
+        <p class="p-desc">White-label for institutions serving their own clients with Trovally intelligence.</p>
+        <ul class="p-features">
+          <li>Full white-label platform</li>
+          <li>Your branding throughout</li>
+          <li>Dedicated account manager</li>
+          <li>Custom country builds</li>
+          <li>SLA & uptime guarantee</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL CTA -->
+<section class="cta">
+  <h2 class="cta-title reveal">The money was always there.<br/><em>Now you can see it.</em></h2>
+  <p class="cta-sub reveal">Join the waitlist. Early members receive founding pricing locked for life.</p>
+
+  <div class="wl-wrap reveal">
+    <form class="wl-form" id="form2">
+      <input class="wl-input" type="email" id="email2" placeholder="Your email address" required />
+      <button class="wl-btn" type="submit">Secure Early Access</button>
+    </form>
+    <div class="wl-success" id="success2">
+      You are on the map. We will be in touch.
+    </div>
+    <p class="wl-note">Founding pricing · First access · No commitment</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Trovally</div>
+  <div class="f-links">
+    <a href="#intelligence" class="f-link">How It Works</a>
+    <a href="#countries" class="f-link">Coverage</a>
+    <a href="#pricing" class="f-link">Pricing</a>
+    <a href="#waitlist" class="f-link">Join Waitlist</a>
+  </div>
+  <div class="f-copy">© 2026 Trovally. All rights reserved.</div>
+</footer>
+
+<script>
+  // Waitlist forms
+  function setup(formId, emailId, successId) {
+    document.getElementById(formId).addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById(emailId).value.trim();
+      if (!email) return;
+      const list = JSON.parse(localStorage.getItem('trovally_wl') || '[]');
+      if (!list.includes(email)) { list.push(email); localStorage.setItem('trovally_wl', JSON.stringify(list)); }
+      document.getElementById(formId).style.display = 'none';
+      document.getElementById(successId).style.display = 'block';
+    });
+  }
+
+  setup('form1', 'email1', 'success1');
+  setup('form2', 'email2', 'success2');
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
