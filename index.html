@@ -985,12 +985,17 @@
 <script>
   // Waitlist forms
   function setup(formId, emailId, successId) {
-    document.getElementById(formId).addEventListener('submit', function(e) {
+    document.getElementById(formId).addEventListener('submit', async function(e) {
       e.preventDefault();
       const email = document.getElementById(emailId).value.trim();
       if (!email) return;
-      const list = JSON.parse(localStorage.getItem('trovally_wl') || '[]');
-      if (!list.includes(email)) { list.push(email); localStorage.setItem('trovally_wl', JSON.stringify(list)); }
+      try {
+        await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+      } catch(err) {}
       document.getElementById(formId).style.display = 'none';
       document.getElementById(successId).style.display = 'block';
     });
